@@ -6,15 +6,11 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/20 22:56:32 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 01:00:16 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
-
-
-
-
 
 #endif
