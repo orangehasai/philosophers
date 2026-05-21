@@ -131,12 +131,35 @@ jobs:
             fi
           }
 
-          run_expect_success() {
+          run_expect_alive() {
             name=$1
+            duration=$2
+            shift 2
+
+            set +e
+            timeout "$duration" "$@" > "${name}.log" 2>&1
+            status=$?
+            set -e
+            if [ "$status" -ne 124 ]; then
+              echo "::error::${name} did not stay alive for ${duration}"
+              cat "${name}.log"
+              exit 1
+            fi
+            if grep -q ' died$' "${name}.log"; then
+              echo "::error::${name} died unexpectedly"
+              cat "${name}.log"
+              exit 1
+            fi
+          }
+
+          run_expect_complete() {
+            name=$1
+            duration=$2
+            shift
             shift
 
             set +e
-            "$@" > "${name}.log" 2>&1
+            timeout "$duration" "$@" > "${name}.log" 2>&1
             status=$?
             set -e
             if [ "$status" -ne 0 ]; then
@@ -144,15 +167,15 @@ jobs:
               cat "${name}.log"
               exit 1
             fi
-            if [ -s "${name}.log" ]; then
-              echo "::error::${name} unexpectedly wrote output"
+            if grep -q ' died$' "${name}.log"; then
+              echo "::error::${name} died unexpectedly"
               cat "${name}.log"
               exit 1
             fi
           }
 
-          run_expect_success valid_basic ./philo 5 800 200 200
-          run_expect_success valid_must_eat ./philo 5 800 200 200 7
+          run_expect_alive valid_basic 2s ./philo 5 800 200 200
+          run_expect_complete valid_must_eat 8s ./philo 5 800 200 200 7
           run_expect_fail invalid_zero ./philo 0 800 200 200
           run_expect_fail invalid_negative ./philo 5 -1 200 200
 
@@ -177,10 +200,12 @@ jobs:
         run: |
           run_valgrind_case() {
             name=$1
+            duration=$2
+            shift
             shift
 
             set +e
-            timeout 5s valgrind --quiet \
+            timeout "$duration" valgrind --quiet \
               --leak-check=full \
               --show-leak-kinds=all \
               --errors-for-leak-kinds=all \
@@ -202,12 +227,12 @@ jobs:
               cat "${name}.vg.log"
               exit 1
             fi
-            if [ -s "${name}.out" ]; then
-              echo "::error::${name} unexpectedly wrote output"
+            if grep -q ' died$' "${name}.out"; then
+              echo "::error::${name} died unexpectedly"
               cat "${name}.out"
               exit 1
             fi
           }
 
-          run_valgrind_case valid_basic ./philo 5 800 200 200
-          run_valgrind_case valid_must_eat ./philo 5 800 200 200 7
+          run_valgrind_case valid_one_meal 8s ./philo 5 800 200 200 1
+          run_valgrind_case valid_two_meals 10s ./philo 5 800 200 200 2

@@ -24,7 +24,7 @@ void	handle_one_philo(t_philo *philo)
 static void	stagger(t_philo *philo)
 {
 	if (philo->id % 2 == 0)
-		usleep(500);
+		precise_sleep(philo->rules->time_to_eat_ms / 2, philo->rules);
 }
 
 static void	*philo_routine(void *arg)
