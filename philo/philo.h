@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 19:29:49 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 19:45:50 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,4 +63,5 @@ void				print_state(t_philo *philo, const char *msg);
 void				announce_death(t_philo *philo);
 void				take_forks(t_philo *philo);
 void				put_forks(t_philo *philo);
+void				handle_one_philo(t_philo *philo);
 #endif
