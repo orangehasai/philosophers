@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 15:46:27 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 19:09:47 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <limits.h>
 # include <pthread.h>
+# include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
@@ -58,4 +59,6 @@ void				cleanup_arrays(t_rules *rules);
 void				cleanup_init_failure(t_rules *rules, int fork_count,
 						int state_count);
 void				cleanup_all(t_rules *rules);
+void				print_state(t_philo *philo, const char *msg);
+void				announce_death(t_philo *philo);
 #endif
