@@ -12,6 +12,7 @@ SRCS = actions.c \
 		parse.c \
 		print.c \
 		routine.c \
+		stop.c \
 		time.c \
 
 OBJS = $(SRCS:.c=.o)
