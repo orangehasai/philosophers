@@ -1,26 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time.c                                             :+:      :+:    :+:   */
+/*   stop.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/20 22:56:08 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 14:09:52 by stonegaw         ###   ########.fr       */
+/*   Created: 2026/05/21 14:04:27 by stonegaw          #+#    #+#             */
+/*   Updated: 2026/05/21 14:09:55 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long long	now_us(void)
+int	simulation_should_stop(t_rules *rules)
 {
-	struct timeval	tv;
+	int	stop;
 
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000000LL + tv.tv_usec);
+	pthread_mutex_lock(&rules->stop_mutex);
+	stop = rules->stop;
+	pthread_mutex_unlock(&rules->stop_mutex);
+	return (stop);
 }
 
-long long	elapsed_ms(t_rules *rules)
+void	set_stop_flag(t_rules *rules, int value)
 {
-	return ((now_us() - rules->start_us) / 1000LL);
+	pthread_mutex_lock(&rules->stop_mutex);
+	rules->stop = value;
+	pthread_mutex_unlock(&rules->stop_mutex);
 }

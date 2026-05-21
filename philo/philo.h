@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 01:00:16 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 14:12:19 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <limits.h>
 # include <pthread.h>
+# include <sys/time.h>
 # include <unistd.h>
 
 typedef struct s_rules
@@ -30,7 +31,7 @@ typedef struct s_rules
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	*forks;
 	struct s_philo	*philos;
-}	t_rules;
+}					t_rules;
 
 typedef struct s_philo
 {
@@ -44,8 +45,12 @@ typedef struct s_philo
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_rules			*rules;
-}	t_philo;
+}					t_philo;
 
-int	parse_args(int argc, char **argv, t_rules *rules);
+int					parse_args(int argc, char **argv, t_rules *rules);
+long long			now_us(void);
+long long			elapsed_ms(t_rules *rules);
+int					simulation_should_stop(t_rules *rules);
+void				set_stop_flag(t_rules *rules, int value);
 
 #endif
