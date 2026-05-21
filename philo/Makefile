@@ -4,7 +4,10 @@ CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRCS = actions.c \
+SRCS = action_eat.c \
+		action_fork.c \
+		action_sleep.c \
+		action_think.c \
 		cleanup.c \
 		init.c \
 		main.c \
