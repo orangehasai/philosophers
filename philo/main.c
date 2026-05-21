@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:55:59 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 15:47:22 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 16:57:35 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,6 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_data(&rules))
 		return (1);
+	cleanup_all(&rules);
 	return (0);
 }
