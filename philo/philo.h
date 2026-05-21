@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 14:12:19 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 15:46:27 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <limits.h>
 # include <pthread.h>
+# include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
 
@@ -52,5 +53,5 @@ long long			now_us(void);
 long long			elapsed_ms(t_rules *rules);
 int					simulation_should_stop(t_rules *rules);
 void				set_stop_flag(t_rules *rules, int value);
-
+int					init_data(t_rules *rules);
 #endif
