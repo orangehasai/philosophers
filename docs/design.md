@@ -331,11 +331,13 @@ static pthread_mutex_t	*second_fork(t_philo *philo)
 方針:
 
 - 偶数番 thread はループ開始前に `time_to_eat / 2` だけ待つ
+- 哲学者数が奇数のときは philosopher `1` も同様に少し待つ
 
 例:
 
 ```c
-if (philo->id % 2 == 0)
+if (philo->id % 2 == 0 || (philo->rules->num_philo % 2 == 1
+		&& philo->id == 1))
 	precise_sleep(philo->rules->time_to_eat_ms / 2, philo->rules);
 ```
 

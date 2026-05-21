@@ -91,6 +91,8 @@ The implementation uses:
 
 - an initial stagger for even-numbered philosophers
   - they wait for `time_to_eat / 2` before entering the main loop
+- an additional initial stagger for philosopher `1` when the philosopher count is odd
+  - this reduces the early bias around fork `0`
 - an extra delay after `thinking` when the philosopher count is odd
   - `max(0, 2 * time_to_eat - time_to_sleep)`
 
