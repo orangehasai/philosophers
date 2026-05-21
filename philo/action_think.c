@@ -14,5 +14,13 @@
 
 void	think(t_philo *philo)
 {
+	long long	think_ms;
+
 	print_state(philo, "is thinking");
+	if (philo->rules->num_philo % 2 == 0)
+		return ;
+	think_ms = philo->rules->time_to_eat_ms * 2
+		- philo->rules->time_to_sleep_ms;
+	if (think_ms > 0)
+		precise_sleep(think_ms, philo->rules);
 }

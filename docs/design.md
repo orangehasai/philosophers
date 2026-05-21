@@ -330,13 +330,13 @@ static pthread_mutex_t	*second_fork(t_philo *philo)
 
 方針:
 
-- 偶数番 thread はループ開始前に軽く待つ
+- 偶数番 thread はループ開始前に `time_to_eat / 2` だけ待つ
 
 例:
 
 ```c
 if (philo->id % 2 == 0)
-	usleep(1000);
+	precise_sleep(philo->rules->time_to_eat_ms / 2, philo->rules);
 ```
 
 目的:
@@ -443,6 +443,8 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 11. `is sleeping` を出す
 12. `time_to_sleep_ms` だけ待つ
 13. `is thinking` を出す
+14. 哲学者数が奇数で `2 * time_to_eat - time_to_sleep > 0` のときは
+    その分だけ追加で待つ
 
 ### 13.1 なぜ eating 開始前に `last_meal_us` を更新するのか
 
@@ -587,7 +589,7 @@ now_us - last_meal_us > time_to_die_ms * 1000
 
 ### 17.2 完食判定
 
-`must_eat_count != -1` のときだけ有効です。  
+`must_eat_count != MUST_EAT_UNSET` のときだけ有効です。  
 全員 `meals_eaten >= must_eat_count` になれば stop します。
 
 ### 17.3 監視間隔
