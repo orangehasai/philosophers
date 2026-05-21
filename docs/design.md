@@ -625,6 +625,8 @@ now_us - last_meal_us > time_to_die_ms * 1000
   - 通常ログ / death ログ
 - `time.c`
   - `now_us`, `elapsed_ms`, `precise_sleep`
+- `stop.c`
+  - `simulation_should_stop`, `set_stop_flag`
 - `cleanup.c`
   - destroy / free
 
@@ -632,7 +634,7 @@ now_us - last_meal_us > time_to_die_ms * 1000
 
 1. 引数パース
 2. `now_us`
-3. `simulation_should_stop`
+3. stop helper
 4. `print_state`
 5. forks / philos 初期化
 6. `1 philosopher` 分岐
