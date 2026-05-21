@@ -20,16 +20,30 @@ void	cleanup_arrays(t_rules *rules)
 	rules->forks = NULL;
 }
 
-static void	destroy_state_mutexes(t_rules *rules, int count)
+static int	destroy_state_mutexes(t_rules *rules, int count)
 {
+	int	err;
+
+	err = 0;
 	while (count-- > 0)
-		pthread_mutex_destroy(&rules->philos[count].state_mutex);
+	{
+		if (pthread_mutex_destroy(&rules->philos[count].state_mutex) != 0)
+			err = 1;
+	}
+	return (err);
 }
 
-static void	destroy_fork_mutexes(t_rules *rules, int count)
+static int	destroy_fork_mutexes(t_rules *rules, int count)
 {
+	int	err;
+
+	err = 0;
 	while (count-- > 0)
-		pthread_mutex_destroy(&rules->forks[count]);
+	{
+		if (pthread_mutex_destroy(&rules->forks[count]) != 0)
+			err = 1;
+	}
+	return (err);
 }
 
 void	cleanup_init_failure(t_rules *rules, int fork_count, int state_count)
@@ -41,11 +55,19 @@ void	cleanup_init_failure(t_rules *rules, int fork_count, int state_count)
 	cleanup_arrays(rules);
 }
 
-void	cleanup_all(t_rules *rules)
+int	cleanup_all(t_rules *rules)
 {
-	destroy_state_mutexes(rules, rules->num_philo);
-	destroy_fork_mutexes(rules, rules->num_philo);
-	pthread_mutex_destroy(&rules->print_mutex);
-	pthread_mutex_destroy(&rules->stop_mutex);
+	int	err;
+
+	err = 0;
+	if (destroy_state_mutexes(rules, rules->num_philo))
+		err = 1;
+	if (destroy_fork_mutexes(rules, rules->num_philo))
+		err = 1;
+	if (pthread_mutex_destroy(&rules->print_mutex) != 0)
+		err = 1;
+	if (pthread_mutex_destroy(&rules->stop_mutex) != 0)
+		err = 1;
 	cleanup_arrays(rules);
+	return (err);
 }

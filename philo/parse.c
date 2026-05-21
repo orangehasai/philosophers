@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:03 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 02:50:02 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/22 00:07:04 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int	parse_args(int ac, char **av, t_rules *rules)
 			&rules->time_to_eat_ms) || parse_time_arg(av[4],
 			&rules->time_to_sleep_ms))
 		return (parse_error());
-	rules->must_eat_count = -1;
+	rules->must_eat_count = MUST_EAT_UNSET;
 	if (ac == 6 && parse_int_arg(av[5], &rules->must_eat_count))
 		return (parse_error());
 	return (0);
