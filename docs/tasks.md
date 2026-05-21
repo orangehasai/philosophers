@@ -10,6 +10,8 @@
 
 - 1 タスク = 1 つの責務
 - 1 タスクの差分は、原則として 1〜3 ファイルに収める
+- ただし Norm の 5 関数制限を避けるため、
+  行動系 helper は `action_*.c` へ分割してよい
 - 1 タスク完了時点で、少なくとも「壊れていない説明可能な状態」にする
 - 並行処理の核心ロジックは、初期化・ログ・監視・行動を分けてレビューする
 - Bonus はこの一覧に含めない
@@ -24,7 +26,7 @@
   - 空の `.c` ファイル群
 - 完了条件:
   - `make` が通る最小骨格がある
-  - ソースファイル分割方針が [design.md](/Users/takenakatakeshiichirouta/Desktop/ft/level_4/philosophers/docs/design.md:623) と一致している
+  - ソースファイル分割方針が [design.md](/Users/takenakatakeshiichirouta/Desktop/ft/level_4/philosophers/docs/design.md:633) と一致している
 - レビュー観点:
   - ファイル責務が分かれているか
   - `Makefile` の変数名、ルール名、依存関係に破綻がないか
@@ -130,7 +132,7 @@
 - 目的:
   - resource hierarchy に基づく fork 取得順を固定する
 - 主な対象:
-  - `actions.c`
+  - `action_fork.c`
   - `philo.h`
 - 完了条件:
   - `first_fork`
@@ -185,7 +187,9 @@
 - 目的:
   - philosopher の 1 周分の行動を完成させる
 - 主な対象:
-  - `actions.c`
+  - `action_eat.c`
+  - `action_sleep.c`
+  - `action_think.c`
   - `time.c`
   - `routine.c`
 - 完了条件:

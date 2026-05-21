@@ -6,12 +6,14 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:32 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 23:06:01 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/22 00:10:34 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
+
+# define MUST_EAT_UNSET -1
 
 # include <limits.h>
 # include <pthread.h>
@@ -58,15 +60,18 @@ int					init_data(t_rules *rules);
 void				cleanup_arrays(t_rules *rules);
 void				cleanup_init_failure(t_rules *rules, int fork_count,
 						int state_count);
-void				cleanup_all(t_rules *rules);
+int					cleanup_all(t_rules *rules);
 void				print_state(t_philo *philo, const char *msg);
 void				announce_death(t_philo *philo);
 void				take_forks(t_philo *philo);
 void				put_forks(t_philo *philo);
 void				handle_one_philo(t_philo *philo);
-int					start_routine(t_rules *rules);
+int					start_routine(t_rules *rules, int *started_count);
+int					join_threads(t_rules *rules, int started_count);
 void				eat(t_philo *philo);
 int					precise_sleep(long long duration_ms, t_rules *rules);
 void				philo_sleep(t_philo *philo);
 void				think(t_philo *philo);
+void				monitor(t_rules *rules);
+
 #endif
