@@ -6,7 +6,7 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:56:04 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/21 20:44:03 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 22:17:59 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ static void	*philo_routine(void *arg)
 	while (!simulation_should_stop(philo->rules))
 	{
 		take_forks(philo);
+		eat(philo);
 		put_forks(philo);
+		philo_sleep(philo);
+		think(philo);
 	}
 	return (NULL);
 }
