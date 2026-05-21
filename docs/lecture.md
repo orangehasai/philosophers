@@ -263,15 +263,20 @@ long long	now_us(void)
 	return (tv.tv_sec * 1000000LL + tv.tv_usec);
 }
 
-void	precise_sleep(long long duration_ms)
+int	precise_sleep(long long duration_ms, t_rules *rules)
 {
 	long long	start_us;
 	long long	target_us;
 
 	start_us = now_us();
 	target_us = duration_ms * 1000LL;
-	while (now_us() - start_us < target_us)
+	while (!simulation_should_stop(rules))
+	{
+		if (now_us() - start_us >= target_us)
+			return (0);
 		usleep(200);
+	}
+	return (1);
 }
 ```
 

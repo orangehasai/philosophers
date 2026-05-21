@@ -396,7 +396,7 @@ long long	elapsed_ms(t_rules *rules)
 刻み sleep にします。
 
 ```c
-void	precise_sleep(long long duration_ms, t_rules *rules)
+int	precise_sleep(long long duration_ms, t_rules *rules)
 {
 	long long	start_us;
 	long long	target_us;
@@ -406,11 +406,19 @@ void	precise_sleep(long long duration_ms, t_rules *rules)
 	while (!simulation_should_stop(rules))
 	{
 		if (now_us() - start_us >= target_us)
-			break ;
+			return (0);
 		usleep(200);
 	}
+	return (1);
 }
 ```
+
+返り値:
+
+- `0`
+  - 指定時間ぶん待ち切った
+- `1`
+  - `stop` を検知して途中で抜けた
 
 理由:
 
@@ -428,7 +436,7 @@ void	precise_sleep(long long duration_ms, t_rules *rules)
 4. `state_mutex` を離す
 5. `is eating` を出す
 6. `time_to_eat_ms` だけ待つ
-7. `state_mutex` を取る
+7. 完走したときだけ `state_mutex` を取る
 8. `meals_eaten++`
 9. `state_mutex` を離す
 10. fork を置く
@@ -463,6 +471,21 @@ void	finish_eating(t_philo *philo)
 	pthread_mutex_unlock(&philo->state_mutex);
 }
 ```
+
+`eat` は次の順でつなぎます。
+
+```c
+void	eat(t_philo *philo)
+{
+	begin_eating(philo);
+	print_state(philo, "is eating");
+	if (precise_sleep(philo->rules->time_to_eat_ms, philo->rules) == 0)
+		finish_eating(philo);
+}
+```
+
+これで `stop` による早期終了時に
+`meals_eaten` を増やさずに済みます。
 
 ## 15. stop 判定 helper
 
@@ -616,9 +639,17 @@ now_us - last_meal_us > time_to_die_ms * 1000
 - `init.c`
   - rules / philos / forks 初期化
 - `routine.c`
-  - 哲学者ループ
-- `actions.c`
-  - take forks / eat / sleep / think
+  - `1 philosopher` 分岐
+  - philosopher routine
+  - thread start helper
+- `action_fork.c`
+  - take forks / put forks
+- `action_eat.c`
+  - begin eating / finish eating / eat
+- `action_sleep.c`
+  - `philo_sleep`
+- `action_think.c`
+  - `think`
 - `monitor.c`
   - death / full 監視
 - `print.c`
