@@ -54,4 +54,8 @@ long long			elapsed_ms(t_rules *rules);
 int					simulation_should_stop(t_rules *rules);
 void				set_stop_flag(t_rules *rules, int value);
 int					init_data(t_rules *rules);
+void				cleanup_arrays(t_rules *rules);
+void				cleanup_init_failure(t_rules *rules, int fork_count,
+						int state_count);
+void				cleanup_all(t_rules *rules);
 #endif

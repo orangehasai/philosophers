@@ -6,6 +6,46 @@
 /*   By: stonegaw <stonegaw@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 22:55:55 by stonegaw          #+#    #+#             */
-/*   Updated: 2026/05/20 22:56:22 by stonegaw         ###   ########.fr       */
+/*   Updated: 2026/05/21 17:54:59 by stonegaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "philo.h"
+
+void	cleanup_arrays(t_rules *rules)
+{
+	free(rules->philos);
+	free(rules->forks);
+	rules->philos = NULL;
+	rules->forks = NULL;
+}
+
+static void	destroy_state_mutexes(t_rules *rules, int count)
+{
+	while (count-- > 0)
+		pthread_mutex_destroy(&rules->philos[count].state_mutex);
+}
+
+static void	destroy_fork_mutexes(t_rules *rules, int count)
+{
+	while (count-- > 0)
+		pthread_mutex_destroy(&rules->forks[count]);
+}
+
+void	cleanup_init_failure(t_rules *rules, int fork_count, int state_count)
+{
+	destroy_state_mutexes(rules, state_count);
+	destroy_fork_mutexes(rules, fork_count);
+	pthread_mutex_destroy(&rules->print_mutex);
+	pthread_mutex_destroy(&rules->stop_mutex);
+	cleanup_arrays(rules);
+}
+
+void	cleanup_all(t_rules *rules)
+{
+	destroy_state_mutexes(rules, rules->num_philo);
+	destroy_fork_mutexes(rules, rules->num_philo);
+	pthread_mutex_destroy(&rules->print_mutex);
+	pthread_mutex_destroy(&rules->stop_mutex);
+	cleanup_arrays(rules);
+}
