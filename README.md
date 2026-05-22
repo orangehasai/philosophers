@@ -83,6 +83,8 @@ For each philosopher, the program tracks:
 
 `last_meal_us` is updated at the start of eating, not at the end. This matches the subject requirement: a philosopher dies if they do not start eating within `time_to_die` milliseconds since the last meal start, or since the beginning of the simulation.
 
+The monitor is the only thread that publishes `died` and sets `stop`. Each worker thread also checks its own deadline from `last_meal_us` before starting the next state transition, so it does not commit a new action after it has already died locally. After a blocking operation such as `pthread_mutex_lock`, the worker checks again before publishing a new state. Because of that, a fork lock may succeed without printing `has taken a fork` if the philosopher already missed the deadline while waiting.
+
 ### Starvation Mitigation
 
 This project does **not** claim a formal starvation-free guarantee. Instead, it applies practical scheduling adjustments that make the standard scenarios much more stable.
