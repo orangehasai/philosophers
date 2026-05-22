@@ -12,15 +12,18 @@
 
 #include "philo.h"
 
-void	think(t_philo *philo)
+int	think(t_philo *philo)
 {
 	long long	think_ms;
 
+	if (!can_take_next_action(philo))
+		return (1);
 	print_state(philo, "is thinking");
 	if (philo->rules->num_philo % 2 == 0)
-		return ;
+		return (0);
 	think_ms = philo->rules->time_to_eat_ms * 2
 		- philo->rules->time_to_sleep_ms;
 	if (think_ms > 0)
-		precise_sleep(think_ms, philo->rules);
+		return (precise_sleep(think_ms, philo->rules));
+	return (0);
 }
