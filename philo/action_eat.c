@@ -28,7 +28,7 @@ static int	begin_eating(t_philo *philo)
 	return (0);
 }
 
-static void	finish_eating(t_philo *philo)
+void	finish_eating(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->state_mutex);
 	philo->meals_eaten++;
@@ -37,13 +37,10 @@ static void	finish_eating(t_philo *philo)
 
 int	eat(t_philo *philo)
 {
-	if (!can_take_next_action(philo))
-		return (1);
 	if (begin_eating(philo))
 		return (1);
 	print_state(philo, "is eating");
 	if (precise_sleep(philo->rules->time_to_eat_ms, philo->rules))
 		return (1);
-	finish_eating(philo);
 	return (0);
 }

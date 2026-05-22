@@ -398,18 +398,31 @@ long long	elapsed_ms(t_rules *rules)
 刻み sleep にします。
 
 ```c
+static useconds_t	sleep_chunk_us(long long remaining_us)
+{
+	if (remaining_us > 2000)
+		return (500);
+	if (remaining_us > 500)
+		return (100);
+	return (50);
+}
+
 int	precise_sleep(long long duration_ms, t_rules *rules)
 {
 	long long	start_us;
+	long long	elapsed_us;
 	long long	target_us;
+	long long	remaining_us;
 
 	start_us = now_us();
 	target_us = duration_ms * 1000LL;
 	while (!simulation_should_stop(rules))
 	{
-		if (now_us() - start_us >= target_us)
+		elapsed_us = now_us() - start_us;
+		if (elapsed_us >= target_us)
 			return (0);
-		usleep(200);
+		remaining_us = target_us - elapsed_us;
+		usleep(sleep_chunk_us(remaining_us));
 	}
 	return (1);
 }
@@ -426,6 +439,7 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 
 - stop を早く検知したい
 - 長い block を避けたい
+- 締切が近いときに oversleep しすぎないようにしたい
 - 10ms 制約に寄せたい
 
 ## 13. 状態遷移
@@ -438,10 +452,10 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 4. `state_mutex` を離す
 5. `is eating` を出す
 6. `time_to_eat_ms` だけ待つ
-7. 完走したときだけ `state_mutex` を取る
-8. `meals_eaten++`
-9. `state_mutex` を離す
-10. fork を置く
+7. fork を置く
+8. 完走したときだけ `state_mutex` を取る
+9. `meals_eaten++`
+10. `state_mutex` を離す
 11. `is sleeping` を出す
 12. `time_to_sleep_ms` だけ待つ
 13. `is thinking` を出す
@@ -483,13 +497,23 @@ void	eat(t_philo *philo)
 {
 	begin_eating(philo);
 	print_state(philo, "is eating");
-	if (precise_sleep(philo->rules->time_to_eat_ms, philo->rules) == 0)
-		finish_eating(philo);
+	precise_sleep(philo->rules->time_to_eat_ms, philo->rules);
 }
 ```
 
-これで `stop` による早期終了時に
-`meals_eaten` を増やさずに済みます。
+その後 routine 側で
+
+1. fork を戻す
+2. `finish_eating`
+
+の順でつなぎます。
+
+これで:
+
+- `stop` による早期終了時に `meals_eaten` を増やさない
+- `meals_eaten++` の前に fork を返せる
+
+を両立できます。
 
 ## 15. stop 判定 helper
 
@@ -608,11 +632,12 @@ now_us - last_meal_us > time_to_die_ms * 1000
 
 ### 17.3 行動開始の判定基準
 
-局所判定を置く場所は「次の状態遷移を始める直前」に固定します。
+局所判定を置く場所は「block から戻った直後」と
+「状態遷移のコミット直前」に固定します。
 
-- `take_forks`, `eat`, `sleep`, `think` の開始前
 - `pthread_mutex_lock` のような block しうる処理から戻った直後
 - `last_meal_us` のように状態遷移を確定させる共有値を書き換える直前
+- sleeping / thinking のように、その場で新しい状態を公開する直前
 
 理由:
 
@@ -620,6 +645,8 @@ now_us - last_meal_us > time_to_die_ms * 1000
 - lock から復帰した時点で状況が変わっていることがある
 - eating 開始は `last_meal_us` 更新で確定するので、判定と更新を同じ
   critical section に入れる必要がある
+- 逆に action helper の先頭で毎回同じ確認をすると、hot path に余計な
+  mutex / 時刻取得が増えて際どいケースで不利になる
 
 逆に、すでに完了した行動の bookkeeping にはこの判定を足しません。
 

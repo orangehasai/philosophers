@@ -49,6 +49,7 @@ static void	*philo_routine(void *arg)
 			break ;
 		}
 		put_forks(philo);
+		finish_eating(philo);
 		if (philo_sleep(philo) || think(philo))
 			break ;
 	}
