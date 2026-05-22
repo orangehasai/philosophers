@@ -398,31 +398,18 @@ long long	elapsed_ms(t_rules *rules)
 刻み sleep にします。
 
 ```c
-static useconds_t	sleep_chunk_us(long long remaining_us)
-{
-	if (remaining_us > 2000)
-		return (500);
-	if (remaining_us > 500)
-		return (100);
-	return (50);
-}
-
 int	precise_sleep(long long duration_ms, t_rules *rules)
 {
 	long long	start_us;
-	long long	elapsed_us;
 	long long	target_us;
-	long long	remaining_us;
 
 	start_us = now_us();
 	target_us = duration_ms * 1000LL;
 	while (!simulation_should_stop(rules))
 	{
-		elapsed_us = now_us() - start_us;
-		if (elapsed_us >= target_us)
+		if (now_us() - start_us >= target_us)
 			return (0);
-		remaining_us = target_us - elapsed_us;
-		usleep(sleep_chunk_us(remaining_us));
+		usleep(100);
 	}
 	return (1);
 }
@@ -439,7 +426,7 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 
 - stop を早く検知したい
 - 長い block を避けたい
-- 締切が近いときに oversleep しすぎないようにしたい
+- wake の位相を極端に崩したくない
 - 10ms 制約に寄せたい
 
 ## 13. 状態遷移
