@@ -36,7 +36,7 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 	{
 		if (now_us() - start_us >= target_us)
 			return (0);
-		usleep(200);
+		usleep(100);
 	}
 	return (1);
 }

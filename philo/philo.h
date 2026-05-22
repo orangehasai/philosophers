@@ -68,6 +68,7 @@ void				print_state(t_philo *philo, const char *msg);
 void				announce_death(t_philo *philo);
 int					take_forks(t_philo *philo);
 void				put_forks(t_philo *philo);
+void				finish_eating(t_philo *philo);
 void				handle_one_philo(t_philo *philo);
 int					start_routine(t_rules *rules, int *started_count);
 int					join_threads(t_rules *rules, int started_count);

@@ -244,7 +244,7 @@ while (now_us() - start_us < target_us)
 
 ```c
 while (now_us() - start_us < target_us)
-	usleep(200);
+	usleep(100);
 ```
 
 これは「睡眠状態をシミュレーション上維持しつつ、細かく経過時間を確認している」だけです。  
@@ -274,7 +274,7 @@ int	precise_sleep(long long duration_ms, t_rules *rules)
 	{
 		if (now_us() - start_us >= target_us)
 			return (0);
-		usleep(200);
+		usleep(100);
 	}
 	return (1);
 }
@@ -559,6 +559,7 @@ static void	*philo_routine(void *arg)
 		take_forks(philo);
 		eat(philo);
 		put_forks(philo);
+		finish_eating(philo);
 		philo_sleep(philo);
 		think(philo);
 	}
@@ -798,13 +799,13 @@ int	check_death(t_philo *philos, int count)
 
 - monitor は死亡を見つけて `stop` を公表する
 - philosopher 自身は「次の行動に進んでよいか」だけを確認する
-- 局所確認は、次の状態遷移の直前に置く
+- 局所確認は、block から戻った直後か、状態遷移を確定する直前に置く
 
 具体的には:
 
-- fork を取りに行く前
 - `pthread_mutex_lock` から戻った直後
 - eating 開始を確定する `last_meal_us` 更新の直前
+- sleeping / thinking を公開する直前
 
 ここで重要なのは、
 「block しうる処理をまたいだら状況が変わる」
@@ -825,7 +826,9 @@ int	check_death(t_philo *philos, int count)
 なので:
 
 - `last_meal_us` 更新前には死亡確認が必要
+- fork lock から戻った直後にも死亡確認が必要
 - `meals_eaten++` 前には同じ種類の確認は不要
+- action helper の先頭で毎回同じ確認を重ねるのはやりすぎ
 
 と整理できます。
 

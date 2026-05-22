@@ -28,8 +28,6 @@ static pthread_mutex_t	*second_fork(t_philo *philo)
 
 int	take_forks(t_philo *philo)
 {
-	if (!can_take_next_action(philo))
-		return (1);
 	pthread_mutex_lock(first_fork(philo));
 	if (!can_take_next_action(philo))
 	{
@@ -37,11 +35,6 @@ int	take_forks(t_philo *philo)
 		return (1);
 	}
 	print_state(philo, "has taken a fork");
-	if (!can_take_next_action(philo))
-	{
-		pthread_mutex_unlock(first_fork(philo));
-		return (1);
-	}
 	pthread_mutex_lock(second_fork(philo));
 	if (!can_take_next_action(philo))
 	{
