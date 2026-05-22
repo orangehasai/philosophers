@@ -12,8 +12,10 @@
 
 #include "philo.h"
 
-void	philo_sleep(t_philo *philo)
+int	philo_sleep(t_philo *philo)
 {
+	if (!can_take_next_action(philo))
+		return (1);
 	print_state(philo, "is sleeping");
-	precise_sleep(philo->rules->time_to_sleep_ms, philo->rules);
+	return (precise_sleep(philo->rules->time_to_sleep_ms, philo->rules));
 }

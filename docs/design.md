@@ -589,12 +589,68 @@ while (stop していない)
 now_us - last_meal_us > time_to_die_ms * 1000
 ```
 
-### 17.2 完食判定
+### 17.2 死亡確認をどこで行うか
+
+死亡確認には 2 つの役割があります。
+
+- monitor が死亡を公表して `stop` を立てること
+- 各 philosopher が「次の行動に進んでよいか」を自分で確かめること
+
+ここでの基準は次です。
+
+- `stop`
+  - monitor が終了を公表したあとの全体フラグ
+- philosopher 自身の死亡確認
+  - `last_meal_us` と現在時刻を比べる局所判定
+
+この 2 つは似ていますが役割が違います。  
+`stop` は全体終了の公開、局所判定は「この philosopher が次へ進めるか」の確認です。
+
+### 17.3 行動開始の判定基準
+
+局所判定を置く場所は「次の状態遷移を始める直前」に固定します。
+
+- `take_forks`, `eat`, `sleep`, `think` の開始前
+- `pthread_mutex_lock` のような block しうる処理から戻った直後
+- `last_meal_us` のように状態遷移を確定させる共有値を書き換える直前
+
+理由:
+
+- block 中に死ぬことがある
+- lock から復帰した時点で状況が変わっていることがある
+- eating 開始は `last_meal_us` 更新で確定するので、判定と更新を同じ
+  critical section に入れる必要がある
+
+逆に、すでに完了した行動の bookkeeping にはこの判定を足しません。
+
+- `meals_eaten++`
+  - eating 完了の記録であり、新しい行動開始ではない
+
+### 17.4 lock できてもログしないケース
+
+fork 待ち中に死亡した場合は、`pthread_mutex_lock` 自体は成功して戻ることが
+あります。  
+このときは:
+
+- fork をすぐ unlock する
+- `has taken a fork` は出さない
+
+とします。
+
+理由:
+
+- lock 成功は「低レベルの mutex 取得」にすぎない
+- ログは「有効な状態遷移を公開する行為」として扱いたい
+
+つまり「fork を一瞬取れた」ことより、
+「その philosopher がまだ次の行動を始めてよいか」を優先します。
+
+### 17.5 完食判定
 
 `must_eat_count != MUST_EAT_UNSET` のときだけ有効です。  
 全員 `meals_eaten >= must_eat_count` になれば stop します。
 
-### 17.3 監視間隔
+### 17.6 監視間隔
 
 ループ末尾で `usleep(500)` か `usleep(1000)` を入れます。
 
