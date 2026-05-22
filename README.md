@@ -41,10 +41,10 @@ make
 Examples:
 
 ```bash
-./philo 2 210 100 100      # should keep running without death
+./philo 2 300 100 100      # should keep running without death
 ./philo 2 199 100 100      # should end with one death
-./philo 3 630 200 200      # should keep running without death
-./philo 5 800 200 200 7    # should exit after all philosophers eat 7 times
+./philo 3 650 200 200      # should keep running without death
+./philo 5 800 200 200 20    # should exit after all philosophers eat 7 times
 ```
 
 ### Clean
